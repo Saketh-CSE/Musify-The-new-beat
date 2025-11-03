@@ -26,7 +26,11 @@ function LikedSongs({ songs, likedSongs, playSong, setQueue }) {
   return (
     <>
       <div className="playlist-header">
-        <img src="https://t.scdn.co/images/3099b3803ad9496896c43f2219413bb4.png" alt="Liked Songs" className="playlist-image" />
+        <img 
+            src="https://placehold.co/232x232/1DB954/121212?text=Liked" 
+            alt="Liked Songs" 
+            className="playlist-image" 
+        />
         <div className="playlist-details">
           <p className="playlist-type">PLAYLIST</p>
           <h1 className="playlist-title">Liked Songs</h1>
