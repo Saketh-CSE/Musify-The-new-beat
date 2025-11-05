@@ -5,294 +5,271 @@ import MusicPlayer from './components/MusicPlayer';
 import LoadingScreen from './components/LoadingScreen';
 import PlayerDisplay from './components/PlayerDisplay';
 
-// We keep playlistData hardcoded for now.
-const playlistData = [
+// This is your live backend URL
+const a = 'https://musify-the-new-beat-production.up.railway.app';
+
+// We keep playlistData hardcoded. We will fix this next.
+const b = [
     { name: 'My Playlist #1', songs: [0, 1, 2], icon: 'fas fa-music' },
     { name: 'Road Trip Mix', songs: [3, 4, 5], icon: 'fas fa-car' },
     { name: 'Chill Vibes', songs: [1, 2, 7], icon: 'fas fa-leaf' },
 ];
 
 function App() {
-  const [loading, setLoading] = useState(true);
+  const [c, d] = useState(true);
+  const [e, f] = useState([]); 
+  const [g, h] = useState(b);
+  const [i, j] = useState(null);
+  const [k, l] = useState(false);
+  const [m, n] = useState('home');
+  const [o, p] = useState(0.7);
+  const [q, r] = useState(0.7);
+  const [s, t] = useState(false);
+  const [u, v] = useState(0);
+  const [w, x] = useState([]);
+  const [y, z] = useState([]);
+  const [aa, ab] = useState(0);
+  const [ac, ad] = useState(0);
+  const [ae, af] = useState(false);
   
-  // We start with an EMPTY array for songs
-  const [songs, setSongs] = useState([]); 
-  
-  const [playlists, setPlaylists] = useState(playlistData);
-  
-  // We keep likedSongs local for now.
-  const [likedSongs, setLikedSongs] = useState(new Set([1, 4]));
-  
-  const [currentSongIndex, setCurrentSongIndex] = useState(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentSection, setCurrentSection] = useState('home');
-  const [volume, setVolume] = useState(0.7);
-  const [previousVolume, setPreviousVolume] = useState(0.7);
-  const [isShuffled, setIsShuffled] = useState(false);
-  const [repeatMode, setRepeatMode] = useState(0);
-  
-  const [originalQueue, setOriginalQueue] = useState([]);
-  const [queue, setQueue] = useState([]);
-  
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [showPlayerDisplay, setShowPlayerDisplay] = useState(false);
-  
-  const audioPlayer = useRef(new Audio());
+  const ag = useRef(new Audio());
 
-  // --- THIS IS THE UPDATED CODE ---
   useEffect(() => {
     async function fetchSongs() {
       try {
-        // This now points to your LIVE Railway backend
-        const response = await fetch('https://musify-the-new-beat-production.up.railway.app/api/songs'); 
+        const response = await fetch(`${a}/api/songs`); 
         const data = await response.json();
         
-        setSongs(data); // Put the songs from the database into our state
+        f(data);
         
-        // Set up the queues now that we have songs
-        const initialQueue = [...Array(data.length).keys()];
-        setOriginalQueue(initialQueue);
-        setQueue(initialQueue);
+        const initialQueue = data.map((song, index) => index);
+        x(initialQueue);
+        z(initialQueue);
         
-        setLoading(false); // Stop the loading screen
+        d(false);
       } catch (error) {
         console.error("Failed to fetch songs:", error);
-        setLoading(false); // Stop loading even if it fails
+        d(false);
       }
     }
-    
     fetchSongs();
-  }, []); // The empty array [] means "run this only once"
-  // --- END OF UPDATED CODE ---
+  }, []);
 
-  const currentSong = currentSongIndex !== null ? songs[currentSongIndex] : null;
+  const ah = i !== null ? e[i] : null;
 
-  const playSong = useCallback((index) => {
-    if (index === null || index < 0 || index >= songs.length) return;
+  const ai = useCallback((index) => {
+    if (index === null || index < 0 || index >= e.length) return;
     
-    const song = songs[index];
-    audioPlayer.current.src = song.url;
-    audioPlayer.current.load();
-    audioPlayer.current.play().catch(error => console.error("Playback failed:", error));
+    const song = e[index];
+    ag.current.src = song.url;
+    ag.current.load();
+    ag.current.play().catch(error => console.error("Playback failed:", error));
     
-    setCurrentSongIndex(index);
-    setIsPlaying(true);
-  }, [songs]);
+    j(index);
+    l(true);
+  }, [e]);
 
-  const togglePlayPause = () => {
-    if (currentSongIndex === null) {
-      playSong(queue[0] || 0);
+  const aj = () => {
+    if (i === null) {
+      ai(y[0] || 0);
       return;
     }
-    
-    if (isPlaying) {
-      audioPlayer.current.pause();
-    } else {
-      audioPlayer.current.play();
-    }
-    setIsPlaying(!isPlaying);
+    if (k) ag.current.pause();
+    else ag.current.play();
   };
   
-  const changeSong = useCallback((direction) => {
-    if (queue.length === 0) return;
-    const currentQueueIndex = queue.indexOf(currentSongIndex);
-    let nextQueueIndex;
+  const ak = useCallback((direction) => {
+    if (y.length === 0) return;
+    const al = y.indexOf(i);
+    let am;
 
     if(direction === 'next') {
-        nextQueueIndex = currentQueueIndex + 1;
-        if (nextQueueIndex >= queue.length) {
-            if (repeatMode === 1) nextQueueIndex = 0;
-            else { setIsPlaying(false); return; }
+        am = al + 1;
+        if (am >= y.length) {
+            if (u === 1) am = 0;
+            else { l(false); return; }
         }
     } else {
-        if (audioPlayer.current.currentTime > 3) {
-            audioPlayer.current.currentTime = 0;
+        if (ag.current.currentTime > 3) {
+            ag.current.currentTime = 0;
             return;
         }
-        nextQueueIndex = currentQueueIndex - 1;
-        if (nextQueueIndex < 0) {
-            if (repeatMode === 1) nextQueueIndex = queue.length - 1;
-            else { audioPlayer.current.currentTime = 0; return; }
+        am = al - 1;
+        if (am < 0) {
+            if (u === 1) am = y.length - 1;
+            else { ag.current.currentTime = 0; return; }
         }
     }
-    playSong(queue[nextQueueIndex]);
-  }, [queue, currentSongIndex, repeatMode, playSong]);
+    ai(y[am]);
+  }, [y, i, u, ai]);
 
-  const nextSong = useCallback(() => changeSong('next'), [changeSong]);
-  const previousSong = useCallback(() => changeSong('prev'), [changeSong]);
+  const an = useCallback(() => ak('next'), [ak]);
+  const ao = useCallback(() => ak('prev'), [ak]);
 
-  const handleSongEnd = useCallback(() => {
-    if (repeatMode === 2) {
-        playSong(currentSongIndex);
-    } else {
-        nextSong();
-    }
-  }, [repeatMode, currentSongIndex, nextSong, playSong]);
+  const ap = useCallback(() => {
+    if (u === 2) ai(i);
+    else an();
+  }, [u, i, an, ai]);
 
   useEffect(() => {
-    const audio = audioPlayer.current;
-    
-    const setAudioData = () => setDuration(audio.duration);
-    const setAudioTime = () => setCurrentTime(audio.currentTime);
-    
-    audio.addEventListener('loadedmetadata', setAudioData);
-    audio.addEventListener('timeupdate', setAudioTime);
-    audio.addEventListener('ended', handleSongEnd);
-    audio.addEventListener('play', () => setIsPlaying(true));
-    audio.addEventListener('pause', () => setIsPlaying(false));
-
+    const audio = ag.current;
+    const aq = () => ad(audio.duration);
+    const ar = () => ab(audio.currentTime);
+    audio.addEventListener('loadedmetadata', aq);
+    audio.addEventListener('timeupdate', ar);
+    audio.addEventListener('ended', ap);
+    audio.addEventListener('play', () => l(true));
+    audio.addEventListener('pause', () => l(false));
     return () => {
-      audio.removeEventListener('loadedmetadata', setAudioData);
-      audio.removeEventListener('timeupdate', setAudioTime);
-      audio.removeEventListener('ended', handleSongEnd);
-      audio.removeEventListener('play', () => setIsPlaying(true));
-      audio.removeEventListener('pause', () => setIsPlaying(false));
+      audio.removeEventListener('loadedmetadata', aq);
+      audio.removeEventListener('timeupdate', ar);
+      audio.removeEventListener('ended', ap);
+      audio.removeEventListener('play', () => l(true));
+      audio.removeEventListener('pause', () => l(false));
     };
-  }, [handleSongEnd]);
+  }, [ap]);
   
-  useEffect(() => {
-    audioPlayer.current.volume = volume;
-  }, [volume]);
+  useEffect(() => { ag.current.volume = o; }, [o]);
   
-  const setAudioVolume = (percent) => {
-    const newVolume = Math.max(0, Math.min(1, percent));
-    setVolume(newVolume);
-  };
+  const as = (percent) => p(Math.max(0, Math.min(1, percent)));
   
-  const toggleMute = () => {
-    if (volume > 0) {
-        setPreviousVolume(volume);
-        setVolume(0);
+  const at = () => {
+    if (o > 0) {
+        r(o);
+        p(0);
     } else {
-        setVolume(previousVolume);
+        p(q);
     }
   };
   
-  const setAudioProgress = (percent) => {
-    if(currentSong === null) return;
-    audioPlayer.current.currentTime = percent * currentSong.duration;
+  const au = (percent) => {
+    if(ah === null) return;
+    ag.current.currentTime = percent * ah.duration;
   };
   
-  const toggleShuffle = () => {
-    const newIsShuffled = !isShuffled;
-    setIsShuffled(newIsShuffled);
-    
-    if (newIsShuffled) {
-        const currentSong = queue[0];
-        let restOfQueue = queue.slice(1);
-        for (let i = restOfQueue.length - 1; i > 0; i--) {
+  const av = () => {
+    const aw = !s;
+    t(aw);
+    if (aw) {
+        const ax = y[0];
+        let ay = y.slice(1);
+        for (let i = ay.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            [restOfQueue[i], restOfQueue[j]] = [restOfQueue[j], restOfQueue[i]];
+            [ay[i], ay[j]] = [ay[j], ay[i]];
         }
-        setQueue([currentSong, ...restOfQueue]);
+        z([ax, ...ay]);
     } else {
-        const currentSong = queue[0];
-        const newQueue = [...originalQueue];
-        newQueue.splice(newQueue.indexOf(currentSong), 1);
-        newQueue.unshift(currentSong);
-        setQueue(newQueue);
+        const ax = y[0];
+        const ay = [...w];
+        ay.splice(ay.indexOf(ax), 1);
+        ay.unshift(ax);
+        z(ay);
     }
   };
   
-  const toggleRepeat = () => {
-    setRepeatMode((prevMode) => (prevMode + 1) % 3);
-  };
+  const az = () => v((ba) => (ba + 1) % 3);
   
-  const toggleLike = (songIndex) => {
-    if (songIndex === null) return;
-    const newLikedSongs = new Set(likedSongs);
-    if (newLikedSongs.has(songIndex)) {
-        newLikedSongs.delete(songIndex);
-    } else {
-        newLikedSongs.add(songIndex);
+  const ba = async (bb, bc) => {
+    if (bb === null) return;
+    try {
+      const response = await fetch(`${a}/api/songs/like/${bb}`, {
+        method: 'POST'
+      });
+      const bd = await response.json();
+
+      f(be => {
+        const bf = [...be];
+        bf[bc] = bd;
+        return bf;
+      });
+
+    } catch (error) {
+      console.error("Failed to toggle like:", error);
     }
-    setLikedSongs(newLikedSongs);
   };
 
-  const switchSection = (section) => {
-    setCurrentSection(section);
-  };
+  const bg = (section) => n(section);
   
-  const playPlaylist = (playlistIndex) => {
-    const playlist = playlists[playlistIndex];
-    if (playlist && playlist.songs.length > 0) {
-        setQueue([...playlist.songs]);
-        playSong(playlist.songs[0]);
+  const bh = (bi) => {
+    const bj = g[bi];
+    if (bj && bj.songs.length > 0) {
+        z([...bj.songs]);
+        ai(bj.songs[0]);
     }
   };
   
-  const createNewPlaylist = () => {
+  const bk = () => {
      const name = prompt('Enter playlist name:');
      if (name && name.trim()) {
-         setPlaylists(prev => [
-            ...prev,
-            { name: name.trim(), songs: [], icon: 'fas fa-music' }
+         h(bl => [
+            ...bl, { name: name.trim(), songs: [], icon: 'fas fa-music' }
          ]);
      }
   };
 
-  if (loading) {
+  const bl = e.filter(song => song.isLiked);
+
+  if (c) {
     return <LoadingScreen />;
   }
 
   return (
     <div className="app">
       <Sidebar
-        currentSection={currentSection}
-        switchSection={switchSection}
-        playlists={playlists}
-        playPlaylist={playPlaylist}
-        createNewPlaylist={createNewPlaylist}
+        currentSection={m}
+        switchSection={bg}
+        playlists={g}
+        playPlaylist={bh}
+        createNewPlaylist={bk}
       />
       <MainContent
-        currentSection={currentSection}
-        songs={songs}
-        likedSongs={likedSongs}
-        playlists={playlists}
-        playSong={playSong}
-        toggleLike={toggleLike}
-        playPlaylist={playPlaylist}
-        queue={queue}
-        setQueue={setQueue}
+        currentSection={m}
+        songs={e}
+        likedSongsArray={bl} 
+        playlists={g}
+        playSong={ai}
+        toggleLike={ba}
+        playPlaylist={bh}
+        queue={y}
+        setQueue={z}
       />
       <MusicPlayer
-        currentSong={currentSong}
-        isPlaying={isPlaying}
-        togglePlayPause={togglePlayPause}
-        nextSong={nextSong}
-        previousSong={previousSong}
-        isLiked={currentSongIndex !== null && likedSongs.has(currentSongIndex)}
-        toggleLike={() => toggleLike(currentSongIndex)}
-        volume={volume}
-        setVolume={setAudioVolume}
-        toggleMute={toggleMute}
-        currentTime={currentTime}
-        duration={duration}
-        setProgress={setAudioProgress}
-        isShuffled={isShuffled}
-        toggleShuffle={toggleShuffle}
-        repeatMode={repeatMode}
-        toggleRepeat={toggleRepeat}
-        onShowPlayerDisplay={() => setShowPlayerDisplay(true)}
+        currentSong={ah}
+        isPlaying={k}
+        togglePlayPause={aj}
+        nextSong={an}
+        previousSong={ao}
+        isLiked={ah ? ah.isLiked : false} 
+        toggleLike={() => ba(ah._id, i)}
+        volume={o}
+        setVolume={as}
+        toggleMute={at}
+        currentTime={aa}
+        duration={ac}
+        setProgress={au}
+        isShuffled={s}
+        toggleShuffle={av}
+        repeatMode={u}
+        toggleRepeat={az}
+        onShowPlayerDisplay={() => af(true)}
       />
       <PlayerDisplay
-        show={showPlayerDisplay}
-        onClose={() => setShowPlayerDisplay(false)}
-        currentSong={currentSong}
-        isPlaying={isPlaying}
-        togglePlayPause={togglePlayPause}
-        nextSong={nextSong}
-        previousSong={previousSong}
-        currentTime={currentTime}
-        duration={duration}
-        setProgress={setAudioProgress}
-        isShuffled={isShuffled}
-        toggleShuffle={toggleShuffle}
-        repeatMode={repeatMode}
-        toggleRepeat={toggleRepeat}
+        show={ae}
+        onClose={() => af(false)}
+        currentSong={ah}
+        isPlaying={k}
+        togglePlayPause={aj}
+        nextSong={an}
+        previousSong={ao}
+        currentTime={aa}
+        duration={ac}
+        setProgress={au}
+        isShuffled={s}
+        toggleShuffle={av}
+        repeatMode={u}
+        toggleRepeat={az}
       />
-      <audio ref={audioPlayer} preload="metadata"></audio>
+      <audio ref={ag} preload="metadata"></audio>
     </div>
   );
 }

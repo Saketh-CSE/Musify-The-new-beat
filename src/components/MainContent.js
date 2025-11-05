@@ -4,19 +4,19 @@ import Search from './Search';
 import Library from './Library';
 import LikedSongs from './LikedSongs';
 
-function MainContent({ currentSection, songs, likedSongs, playlists, playSong, toggleLike, playPlaylist, queue, setQueue }) {
-  const [greeting, setGreeting] = useState('Good evening');
+function MainContent({ currentSection, songs, likedSongsArray, playlists, playSong, toggleLike, playPlaylist, queue, setQueue }) {
+  const [a, b] = useState('Good evening');
 
   useEffect(() => {
-    const hour = new Date().getHours();
-    if (hour < 12) setGreeting('Good morning');
-    else if (hour < 18) setGreeting('Good afternoon');
-    else setGreeting('Good evening');
+    const c = new Date().getHours();
+    if (c < 12) b('Good morning');
+    else if (c < 18) b('Good afternoon');
+    else b('Good evening');
   }, []);
 
-  const [searchInput, setSearchInput] = useState("");
+  const [d, e] = useState("");
   
-  const showSearch = currentSection === 'search';
+  const f = currentSection === 'search';
 
   return (
     <main className="main-content">
@@ -29,17 +29,17 @@ function MainContent({ currentSection, songs, likedSongs, playlists, playSong, t
             <i className="fas fa-chevron-right"></i>
           </button>
         </div>
-        <div className={`search-container ${showSearch ? 'show' : ''}`}>
+        <div className={`search-container ${f ? 'show' : ''}`}>
           <i className="fas fa-search search-icon"></i>
           <input
             type="text"
             className="search-input"
             placeholder="What do you want to listen to?"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
+            value={d}
+            onChange={(event) => e(event.target.value)}
           />
-          {searchInput && (
-            <button className="search-clear show" onClick={() => setSearchInput('')}>
+          {d && (
+            <button className="search-clear show" onClick={() => e('')}>
               <i className="fas fa-times"></i>
             </button>
           )}
@@ -60,9 +60,8 @@ function MainContent({ currentSection, songs, likedSongs, playlists, playSong, t
 
       <div className={`content-section ${currentSection === 'home' ? 'active' : ''}`}>
         <Home
-          greeting={greeting}
+          greeting={a}
           songs={songs}
-          likedSongs={likedSongs}
           playSong={playSong}
           toggleLike={toggleLike}
         />
@@ -71,10 +70,9 @@ function MainContent({ currentSection, songs, likedSongs, playlists, playSong, t
       <div className={`content-section ${currentSection === 'search' ? 'active' : ''}`}>
         <Search
           songs={songs}
-          likedSongs={likedSongs}
           playSong={playSong}
           toggleLike={toggleLike}
-          query={searchInput}
+          query={d}
         />
       </div>
 
@@ -89,7 +87,7 @@ function MainContent({ currentSection, songs, likedSongs, playlists, playSong, t
       <div className={`content-section ${currentSection === 'liked-songs' ? 'active' : ''}`}>
         <LikedSongs
           songs={songs}
-          likedSongs={likedSongs}
+          likedSongsArray={likedSongsArray}
           playSong={playSong}
           queue={queue}
           setQueue={setQueue}
