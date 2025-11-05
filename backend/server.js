@@ -1,23 +1,19 @@
 const a = require('express');
 const b = require('mongoose');
 const c = require('dotenv');
-const g = require('cors'); // This is the 'cors' package
+const g = require('cors');
 
 c.config();
 const d = a();
 d.use(a.json());
 
-// --- NEW CORS FIX ---
-// This is a more robust way to handle requests from your live site
 const j = {
   origin: "https://saketh-cse.github.io",
   methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type"],
 };
 d.use(g(j));
-// Explicitly handle the "preflight" OPTIONS request
 d.options('*', g(j)); 
-// --- END NEW CORS FIX ---
 
 const e = process.env.PORT || 5001;
 
@@ -56,14 +52,12 @@ d.get('/api/songs', async (req, res) => {
   }
 });
 
-// --- NEW API ENDPOINT FOR LIKING SONGS ---
 d.post('/api/songs/like/:id', async (req, res) => {
   try {
     const k = await i.findById(req.params.id);
     if (!k) {
       return res.status(404).json({ msg: 'Song not found' });
     }
-    // Toggle the like status and save
     k.isLiked = !k.isLiked;
     await k.save();
     res.json(k);
@@ -72,7 +66,6 @@ d.post('/api/songs/like/:id', async (req, res) => {
     res.status(500).send('Server Error');
   }
 });
-// --- END NEW API ENDPOINT ---
 
 d.post('/api/seed', async (req, res) => {
   const l = [
