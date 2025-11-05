@@ -14,15 +14,15 @@ const playlistData = [
 
 function App() {
   const [loading, setLoading] = useState(true);
-
+  
   // We start with an EMPTY array for songs
   const [songs, setSongs] = useState([]); 
-
+  
   const [playlists, setPlaylists] = useState(playlistData);
-
+  
   // We keep likedSongs local for now.
   const [likedSongs, setLikedSongs] = useState(new Set([1, 4]));
-
+  
   const [currentSongIndex, setCurrentSongIndex] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentSection, setCurrentSection] = useState('home');
@@ -30,53 +30,52 @@ function App() {
   const [previousVolume, setPreviousVolume] = useState(0.7);
   const [isShuffled, setIsShuffled] = useState(false);
   const [repeatMode, setRepeatMode] = useState(0);
-
+  
   const [originalQueue, setOriginalQueue] = useState([]);
   const [queue, setQueue] = useState([]);
-
+  
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [showPlayerDisplay, setShowPlayerDisplay] = useState(false);
-
+  
   const audioPlayer = useRef(new Audio());
 
-  // --- THIS IS THE NEW CODE ---
-  // This hook runs once when the app loads
+  // --- THIS IS THE UPDATED CODE ---
   useEffect(() => {
     async function fetchSongs() {
       try {
-        // We can use '/api/songs' because of the proxy we set up
-        const response = await fetch('/api/songs'); 
+        // This now points to your LIVE Railway backend
+        const response = await fetch('https://musify-the-new-beat-production.up.railway.app/api/songs'); 
         const data = await response.json();
-
+        
         setSongs(data); // Put the songs from the database into our state
-
+        
         // Set up the queues now that we have songs
         const initialQueue = [...Array(data.length).keys()];
         setOriginalQueue(initialQueue);
         setQueue(initialQueue);
-
+        
         setLoading(false); // Stop the loading screen
       } catch (error) {
         console.error("Failed to fetch songs:", error);
         setLoading(false); // Stop loading even if it fails
       }
     }
-
+    
     fetchSongs();
   }, []); // The empty array [] means "run this only once"
-  // --- END OF NEW CODE ---
+  // --- END OF UPDATED CODE ---
 
   const currentSong = currentSongIndex !== null ? songs[currentSongIndex] : null;
 
   const playSong = useCallback((index) => {
     if (index === null || index < 0 || index >= songs.length) return;
-
+    
     const song = songs[index];
     audioPlayer.current.src = song.url;
     audioPlayer.current.load();
     audioPlayer.current.play().catch(error => console.error("Playback failed:", error));
-
+    
     setCurrentSongIndex(index);
     setIsPlaying(true);
   }, [songs]);
@@ -86,7 +85,7 @@ function App() {
       playSong(queue[0] || 0);
       return;
     }
-
+    
     if (isPlaying) {
       audioPlayer.current.pause();
     } else {
@@ -94,7 +93,7 @@ function App() {
     }
     setIsPlaying(!isPlaying);
   };
-
+  
   const changeSong = useCallback((direction) => {
     if (queue.length === 0) return;
     const currentQueueIndex = queue.indexOf(currentSongIndex);
@@ -133,10 +132,10 @@ function App() {
 
   useEffect(() => {
     const audio = audioPlayer.current;
-
+    
     const setAudioData = () => setDuration(audio.duration);
     const setAudioTime = () => setCurrentTime(audio.currentTime);
-
+    
     audio.addEventListener('loadedmetadata', setAudioData);
     audio.addEventListener('timeupdate', setAudioTime);
     audio.addEventListener('ended', handleSongEnd);
@@ -151,16 +150,16 @@ function App() {
       audio.removeEventListener('pause', () => setIsPlaying(false));
     };
   }, [handleSongEnd]);
-
+  
   useEffect(() => {
     audioPlayer.current.volume = volume;
   }, [volume]);
-
+  
   const setAudioVolume = (percent) => {
     const newVolume = Math.max(0, Math.min(1, percent));
     setVolume(newVolume);
   };
-
+  
   const toggleMute = () => {
     if (volume > 0) {
         setPreviousVolume(volume);
@@ -169,16 +168,16 @@ function App() {
         setVolume(previousVolume);
     }
   };
-
+  
   const setAudioProgress = (percent) => {
     if(currentSong === null) return;
     audioPlayer.current.currentTime = percent * currentSong.duration;
   };
-
+  
   const toggleShuffle = () => {
     const newIsShuffled = !isShuffled;
     setIsShuffled(newIsShuffled);
-
+    
     if (newIsShuffled) {
         const currentSong = queue[0];
         let restOfQueue = queue.slice(1);
@@ -195,11 +194,11 @@ function App() {
         setQueue(newQueue);
     }
   };
-
+  
   const toggleRepeat = () => {
     setRepeatMode((prevMode) => (prevMode + 1) % 3);
   };
-
+  
   const toggleLike = (songIndex) => {
     if (songIndex === null) return;
     const newLikedSongs = new Set(likedSongs);
@@ -214,7 +213,7 @@ function App() {
   const switchSection = (section) => {
     setCurrentSection(section);
   };
-
+  
   const playPlaylist = (playlistIndex) => {
     const playlist = playlists[playlistIndex];
     if (playlist && playlist.songs.length > 0) {
@@ -222,15 +221,15 @@ function App() {
         playSong(playlist.songs[0]);
     }
   };
-
+  
   const createNewPlaylist = () => {
-    const name = prompt('Enter playlist name:');
-    if (name && name.trim()) {
-        setPlaylists(prev => [
+     const name = prompt('Enter playlist name:');
+     if (name && name.trim()) {
+         setPlaylists(prev => [
             ...prev,
             { name: name.trim(), songs: [], icon: 'fas fa-music' }
-        ]);
-    }
+         ]);
+     }
   };
 
   if (loading) {
