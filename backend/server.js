@@ -1,16 +1,16 @@
 const a = require('express');
 const b = require('mongoose');
 const c = require('dotenv');
-const g = require('cors'); // This is the new 'cors' package
+const g = require('cors'); // This is the 'cors' package
 
 c.config();
 const d = a();
 d.use(a.json());
 
-// --- THIS IS THE NEW CODE ---
-// This tells your server to ONLY accept requests from your website
+// --- THIS IS THE UPDATED CODE ---
+// This now allows ALL requests
 d.use(g());
-// --- END NEW CODE ---
+// --- END UPDATED CODE ---
 
 const e = process.env.PORT || 5001;
 
