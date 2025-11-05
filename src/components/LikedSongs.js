@@ -9,6 +9,7 @@ const a = (b) => {
 
 function LikedSongs({ songs, likedSongsArray, playSong, setQueue }) {
   
+  // This is the bug fix. We get the index from the main 'songs' array.
   const b = likedSongsArray.map(c => songs.indexOf(c));
   
   const c = (d) => {
@@ -55,6 +56,7 @@ function LikedSongs({ songs, likedSongsArray, playSong, setQueue }) {
         ) : (
             b.map((e, f) => {
                 const g = songs[e];
+                // This is the bug fix. We check if the song exists.
                 if (!g) return null; 
                 return (
                     <div 

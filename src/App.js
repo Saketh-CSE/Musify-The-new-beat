@@ -5,10 +5,8 @@ import MusicPlayer from './components/MusicPlayer';
 import LoadingScreen from './components/LoadingScreen';
 import PlayerDisplay from './components/PlayerDisplay';
 
-// This is your live backend URL
 const a = 'https://musify-the-new-beat-production.up.railway.app';
 
-// We keep playlistData hardcoded. We will fix this next.
 const b = [
     { name: 'My Playlist #1', songs: [0, 1, 2], icon: 'fas fa-music' },
     { name: 'Road Trip Mix', songs: [3, 4, 5], icon: 'fas fa-car' },
@@ -207,11 +205,12 @@ function App() {
      }
   };
 
-  const bl = e.filter(song => song.isLiked);
-
-  if (c) {
+  // This is the bug fix. We now check if 'e' (songs) has loaded.
+  if (c || !e || e.length === 0) {
     return <LoadingScreen />;
   }
+  
+  const bl = e.filter(song => song.isLiked);
 
   return (
     <div className="app">
