@@ -5,17 +5,7 @@ import MusicPlayer from './components/MusicPlayer';
 import LoadingScreen from './components/LoadingScreen';
 import PlayerDisplay from './components/PlayerDisplay';
 
-const songData = [
-    { title: 'Lost in the City', artist: 'Cosmo Sheldrake', album: 'The Much Much How How and I', duration: 212, image: 'https://images.pexels.com/photos/1699161/pexels-photo-1699161.jpeg?auto=compress&cs=tinysrgb&w=300', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
-    { title: 'Forest Temple', artist: 'Koji Kondo', album: 'The Legend of Zelda', duration: 172, image: 'https://images.pexels.com/photos/3225517/pexels-photo-3225517.jpeg?auto=compress&cs=tinysrgb&w=300', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
-    { title: 'Aqua Vitae', artist: 'Future World Music', album: 'Behold', duration: 259, image: 'https://images.pexels.com/photos/1671325/pexels-photo-1671325.jpeg?auto=compress&cs=tinysrgb&w=300', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
-    { title: 'Chasing the Wind', artist: 'Twelve Titans Music', album: 'Evermore', duration: 184, image: 'https://images.pexels.com/photos/440731/pexels-photo-440731.jpeg?auto=compress&cs=tinysrgb&w=300', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3' },
-    { title: 'The Last Butterfly', artist: 'Clem Leek', album: 'Rest', duration: 162, image: 'https://images.pexels.com/photos/672101/pexels-photo-672101.jpeg?auto=compress&cs=tinysrgb&w=300', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3' },
-    { title: 'A New Day', artist: 'Altan', album: 'The Widening Gyre', duration: 234, image: 'https://images.pexels.com/photos/1757363/pexels-photo-1757363.jpeg?auto=compress&cs=tinysrgb&w=300', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3' },
-    { title: 'The Shire', artist: 'Howard Shore', album: 'The Lord of the Rings', duration: 135, image: 'https://images.pexels.com/photos/2361/nature-farm-agriculture-green.jpg?auto=compress&cs=tinysrgb&w=300', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3' },
-    { title: 'Victory', artist: 'Two Steps From Hell', album: 'Battlecry', duration: 320, image: 'https://images.pexels.com/photos/842711/pexels-photo-842711.jpeg?auto=compress&cs=tinysrgb&w=300', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3' },
-];
-
+// We keep playlistData hardcoded for now.
 const playlistData = [
     { name: 'My Playlist #1', songs: [0, 1, 2], icon: 'fas fa-music' },
     { name: 'Road Trip Mix', songs: [3, 4, 5], icon: 'fas fa-car' },
@@ -24,9 +14,15 @@ const playlistData = [
 
 function App() {
   const [loading, setLoading] = useState(true);
-  const [songs] = useState(songData);
+
+  // We start with an EMPTY array for songs
+  const [songs, setSongs] = useState([]); 
+
   const [playlists, setPlaylists] = useState(playlistData);
+
+  // We keep likedSongs local for now.
   const [likedSongs, setLikedSongs] = useState(new Set([1, 4]));
+
   const [currentSongIndex, setCurrentSongIndex] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentSection, setCurrentSection] = useState('home');
@@ -34,31 +30,53 @@ function App() {
   const [previousVolume, setPreviousVolume] = useState(0.7);
   const [isShuffled, setIsShuffled] = useState(false);
   const [repeatMode, setRepeatMode] = useState(0);
-  
-  const [originalQueue] = useState([...Array(songs.length).keys()]);
-  const [queue, setQueue] = useState([...originalQueue]);
-  
+
+  const [originalQueue, setOriginalQueue] = useState([]);
+  const [queue, setQueue] = useState([]);
+
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [showPlayerDisplay, setShowPlayerDisplay] = useState(false);
-  
+
   const audioPlayer = useRef(new Audio());
 
+  // --- THIS IS THE NEW CODE ---
+  // This hook runs once when the app loads
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1500);
-    return () => clearTimeout(timer);
-  }, []);
+    async function fetchSongs() {
+      try {
+        // We can use '/api/songs' because of the proxy we set up
+        const response = await fetch('/api/songs'); 
+        const data = await response.json();
+
+        setSongs(data); // Put the songs from the database into our state
+
+        // Set up the queues now that we have songs
+        const initialQueue = [...Array(data.length).keys()];
+        setOriginalQueue(initialQueue);
+        setQueue(initialQueue);
+
+        setLoading(false); // Stop the loading screen
+      } catch (error) {
+        console.error("Failed to fetch songs:", error);
+        setLoading(false); // Stop loading even if it fails
+      }
+    }
+
+    fetchSongs();
+  }, []); // The empty array [] means "run this only once"
+  // --- END OF NEW CODE ---
 
   const currentSong = currentSongIndex !== null ? songs[currentSongIndex] : null;
 
   const playSong = useCallback((index) => {
     if (index === null || index < 0 || index >= songs.length) return;
-    
+
     const song = songs[index];
     audioPlayer.current.src = song.url;
     audioPlayer.current.load();
     audioPlayer.current.play().catch(error => console.error("Playback failed:", error));
-    
+
     setCurrentSongIndex(index);
     setIsPlaying(true);
   }, [songs]);
@@ -68,7 +86,7 @@ function App() {
       playSong(queue[0] || 0);
       return;
     }
-    
+
     if (isPlaying) {
       audioPlayer.current.pause();
     } else {
@@ -76,7 +94,7 @@ function App() {
     }
     setIsPlaying(!isPlaying);
   };
-  
+
   const changeSong = useCallback((direction) => {
     if (queue.length === 0) return;
     const currentQueueIndex = queue.indexOf(currentSongIndex);
@@ -89,14 +107,14 @@ function App() {
             else { setIsPlaying(false); return; }
         }
     } else {
-         if (audioPlayer.current.currentTime > 3) {
+        if (audioPlayer.current.currentTime > 3) {
             audioPlayer.current.currentTime = 0;
             return;
         }
         nextQueueIndex = currentQueueIndex - 1;
         if (nextQueueIndex < 0) {
-             if (repeatMode === 1) nextQueueIndex = queue.length - 1;
-             else { audioPlayer.current.currentTime = 0; return; }
+            if (repeatMode === 1) nextQueueIndex = queue.length - 1;
+            else { audioPlayer.current.currentTime = 0; return; }
         }
     }
     playSong(queue[nextQueueIndex]);
@@ -115,10 +133,10 @@ function App() {
 
   useEffect(() => {
     const audio = audioPlayer.current;
-    
+
     const setAudioData = () => setDuration(audio.duration);
     const setAudioTime = () => setCurrentTime(audio.currentTime);
-    
+
     audio.addEventListener('loadedmetadata', setAudioData);
     audio.addEventListener('timeupdate', setAudioTime);
     audio.addEventListener('ended', handleSongEnd);
@@ -133,16 +151,16 @@ function App() {
       audio.removeEventListener('pause', () => setIsPlaying(false));
     };
   }, [handleSongEnd]);
-  
+
   useEffect(() => {
-     audioPlayer.current.volume = volume;
+    audioPlayer.current.volume = volume;
   }, [volume]);
-  
+
   const setAudioVolume = (percent) => {
     const newVolume = Math.max(0, Math.min(1, percent));
     setVolume(newVolume);
   };
-  
+
   const toggleMute = () => {
     if (volume > 0) {
         setPreviousVolume(volume);
@@ -151,16 +169,16 @@ function App() {
         setVolume(previousVolume);
     }
   };
-  
+
   const setAudioProgress = (percent) => {
     if(currentSong === null) return;
     audioPlayer.current.currentTime = percent * currentSong.duration;
   };
-  
+
   const toggleShuffle = () => {
     const newIsShuffled = !isShuffled;
     setIsShuffled(newIsShuffled);
-    
+
     if (newIsShuffled) {
         const currentSong = queue[0];
         let restOfQueue = queue.slice(1);
@@ -177,11 +195,11 @@ function App() {
         setQueue(newQueue);
     }
   };
-  
+
   const toggleRepeat = () => {
     setRepeatMode((prevMode) => (prevMode + 1) % 3);
   };
-  
+
   const toggleLike = (songIndex) => {
     if (songIndex === null) return;
     const newLikedSongs = new Set(likedSongs);
@@ -196,7 +214,7 @@ function App() {
   const switchSection = (section) => {
     setCurrentSection(section);
   };
-  
+
   const playPlaylist = (playlistIndex) => {
     const playlist = playlists[playlistIndex];
     if (playlist && playlist.songs.length > 0) {
@@ -204,15 +222,15 @@ function App() {
         playSong(playlist.songs[0]);
     }
   };
-  
+
   const createNewPlaylist = () => {
-     const name = prompt('Enter playlist name:');
-     if (name && name.trim()) {
-         setPlaylists(prev => [
+    const name = prompt('Enter playlist name:');
+    if (name && name.trim()) {
+        setPlaylists(prev => [
             ...prev,
             { name: name.trim(), songs: [], icon: 'fas fa-music' }
-         ]);
-     }
+        ]);
+    }
   };
 
   if (loading) {
