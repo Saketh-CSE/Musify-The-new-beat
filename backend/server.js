@@ -9,9 +9,7 @@ d.use(a.json());
 
 // --- THIS IS THE NEW CODE ---
 // This tells your server to ONLY accept requests from your website
-d.use(g({
-  origin: 'https://saketh-cse.github.io' 
-}));
+d.use(g());
 // --- END NEW CODE ---
 
 const e = process.env.PORT || 5001;
