@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/Musify-The-new-beat/static/css/main.9ac7009e.css",
-    "main.js": "/Musify-The-new-beat/static/js/main.51da87bd.js",
+    "main.js": "/Musify-The-new-beat/static/js/main.f9fb6523.js",
     "static/media/fa-solid-900.ttf": "/Musify-The-new-beat/static/media/fa-solid-900.2582b0e4bcf85eceead0.ttf",
     "static/media/fa-brands-400.ttf": "/Musify-The-new-beat/static/media/fa-brands-400.1815e00441357e01619e.ttf",
     "static/media/fa-solid-900.woff2": "/Musify-The-new-beat/static/media/fa-solid-900.2463b90d9a316e4e5294.woff2",
@@ -12,10 +12,10 @@
     "static/media/fa-v4compatibility.woff2": "/Musify-The-new-beat/static/media/fa-v4compatibility.ea8f94e1d22e0d35ccd4.woff2",
     "index.html": "/Musify-The-new-beat/index.html",
     "main.9ac7009e.css.map": "/Musify-The-new-beat/static/css/main.9ac7009e.css.map",
-    "main.51da87bd.js.map": "/Musify-The-new-beat/static/js/main.51da87bd.js.map"
+    "main.f9fb6523.js.map": "/Musify-The-new-beat/static/js/main.f9fb6523.js.map"
   },
   "entrypoints": [
     "static/css/main.9ac7009e.css",
-    "static/js/main.51da87bd.js"
+    "static/js/main.f9fb6523.js"
   ]
 }
