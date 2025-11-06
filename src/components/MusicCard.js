@@ -4,7 +4,14 @@ function MusicCard({ song, songIndex, isLiked, playSong, toggleLike }) {
   return (
     <div className="music-card">
       <div className="card-image">
-        <img src={song.image} alt={song.title} />
+        <img 
+          src={song.image || 'https://placehold.co/300x300/1DB954/ffffff?text=No+Image'} 
+          alt={song.title} 
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = 'https://placehold.co/300x300/1DB954/ffffff?text=No+Image';
+          }}
+        />
         <div className="card-overlay">
           <button className="card-play-btn" onClick={() => playSong(songIndex)}>
             <i className="fas fa-play"></i>

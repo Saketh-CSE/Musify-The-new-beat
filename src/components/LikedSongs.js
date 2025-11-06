@@ -9,7 +9,6 @@ const a = (b) => {
 
 function LikedSongs({ songs, likedSongsArray, playSong, setQueue }) {
   
-  // This is the bug fix. We get the index from the main 'songs' array.
   const b = likedSongsArray.map(c => songs.indexOf(c));
   
   const c = (d) => {
@@ -27,8 +26,14 @@ function LikedSongs({ songs, likedSongsArray, playSong, setQueue }) {
   return (
     <>
       <div className="playlist-header">
-        <img src="https://t.scdn.co/images/3099b3803ad9496896c43f2219413bb4.png" alt="Liked Songs" className="playlist-image" 
-             onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/232x232/1DB954/000000?text=Liked+Songs"; }}
+        <img 
+          src="https://t.scdn.co/images/3099b3803ad9496896c43f2219413bb4.png"
+          alt="Liked Songs"
+          className="playlist-image"
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = "https://placehold.co/232x232/1DB954/000000?text=Liked+Songs";
+          }}
         />
         <div className="playlist-details">
           <p className="playlist-type">PLAYLIST</p>
@@ -56,7 +61,6 @@ function LikedSongs({ songs, likedSongsArray, playSong, setQueue }) {
         ) : (
             b.map((e, f) => {
                 const g = songs[e];
-                // This is the bug fix. We check if the song exists.
                 if (!g) return null; 
                 return (
                     <div 
@@ -66,7 +70,14 @@ function LikedSongs({ songs, likedSongsArray, playSong, setQueue }) {
                     >
                         <div className="song-index">{f + 1}</div>
                         <div className="song-title-info">
-                            <img src={g.image} alt={g.title} />
+                            <img 
+                              src={g.image || 'https://placehold.co/100x100/1DB954/ffffff?text=No+Image'}
+                              alt={g.title}
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = 'https://placehold.co/100x100/1DB954/ffffff?text=No+Image';
+                              }}
+                            />
                             <div className="song-title-details">
                                 <div className="song-title">{g.title}</div>
                                 <div className="song-artist">{g.artist}</div>
@@ -76,7 +87,7 @@ function LikedSongs({ songs, likedSongsArray, playSong, setQueue }) {
                         <div className="song-date-added">A while ago</div>
                         <div className="song-duration">{a(g.duration)}</div>
                     </div>
-                )
+                );
             })
         )}
       </div>

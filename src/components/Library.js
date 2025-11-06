@@ -3,6 +3,11 @@ import React, { useState } from 'react';
 function Library({ songs, playlists, playPlaylist }) {
   const [activeTab, setActiveTab] = useState('playlists');
 
+  const getImage = (index) => {
+    const img = songs[index]?.image;
+    return img || 'https://placehold.co/150x150/1DB954/ffffff?text=Playlist';
+  };
+
   return (
     <>
       <div className="library-header">
@@ -40,7 +45,14 @@ function Library({ songs, playlists, playPlaylist }) {
         <div className="library-list">
           {activeTab === 'playlists' && playlists.map((p, index) => (
             <div key={index} className="library-item" onClick={() => playPlaylist(index)}>
-              <img src={songs[p.songs[0]].image} alt={p.name} />
+              <img 
+                src={getImage(p.songs[0])} 
+                alt={p.name} 
+                onError={(e) => { 
+                  e.target.onerror = null; 
+                  e.target.src = 'https://placehold.co/150x150/1DB954/ffffff?text=Playlist'; 
+                }}
+              />
               <div className="library-info">
                 <h4>{p.name}</h4>
                 <p>Playlist • {p.songs.length} songs</p>

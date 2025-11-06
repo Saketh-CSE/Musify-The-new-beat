@@ -23,7 +23,6 @@ function ProgressBar({ duration, currentTime, setProgress }) {
   );
 }
 
-
 function PlayerDisplay({
     show,
     onClose,
@@ -46,18 +45,28 @@ function PlayerDisplay({
     
     if (!currentSong) return null;
 
+    const backgroundImage = currentSong.image || 'https://placehold.co/600x600/1DB954/ffffff?text=Musify';
+    const albumImage = currentSong.image || 'https://placehold.co/400x400/1DB954/ffffff?text=Album';
+
     return (
         <div className={`player-display ${show ? 'show' : ''}`}>
             <div 
                 className="player-display-background"
-                style={{ backgroundImage: `url(${currentSong.image})`}}
+                style={{ backgroundImage: `url(${backgroundImage})` }}
             ></div>
             <div className="player-display-content">
                 <button className="player-display-close" onClick={onClose}>
                     <i className="fas fa-chevron-down"></i>
                 </button>
                 <div className="player-display-art">
-                    <img src={currentSong.image} alt={currentSong.title} />
+                    <img 
+                      src={albumImage}
+                      alt={currentSong.title}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://placehold.co/400x400/1DB954/ffffff?text=Album';
+                      }}
+                    />
                 </div>
                 <div className="player-display-info">
                     <h2>{currentSong.title}</h2>

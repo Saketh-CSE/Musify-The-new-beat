@@ -64,7 +64,7 @@ function MainContent({ currentSection, songs, likedSongsArray, playlists, playSo
           songs={songs}
           playSong={playSong}
           toggleLike={toggleLike}
-          likedSongs={likedSongsArray} 
+          likedSongs={new Set(likedSongsArray)} 
         />
       </div>
 
@@ -74,7 +74,7 @@ function MainContent({ currentSection, songs, likedSongsArray, playlists, playSo
           playSong={playSong}
           toggleLike={toggleLike}
           query={d}
-          likedSongs={likedSongsArray} 
+          likedSongs={new Set(likedSongsArray)} 
         />
       </div>
 
